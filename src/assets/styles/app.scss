@@ -1,0 +1,59 @@
+/*Then import Bootstrap and BootstrapVue SCSS files (order is important)**/
+@import "node_modules/bootstrap/scss/bootstrap.scss";
+@import "node_modules/bootstrap-vue/src/index.scss";
+
+/****GLOBAL VAIRABLES **********/
+$body_bg: #ffffff;
+$ascent_color: #3256ed;
+$secondary-color: #f34c73;
+$shadows: #161616;
+
+/******CUSTOM CLASSES*******/
+.bg-primary {
+  background-color: $body_bg !important;
+  color: $shadows;
+}
+.bg-secondary {
+  background-color: $ascent_color !important;
+}
+
+a {
+  color: $ascent_color !important;
+}
+
+.h-fitc {
+  height: fit-content;
+}
+
+.bold {
+  font-weight: bold !important;
+}
+
+.bolder {
+  font-weight: bolder !important;
+}
+
+.btn-primary {
+  color: $ascent_color;
+  background-color: $body_bg !important;
+}
+
+.btn-secondary {
+  color: $ascent_color;
+  background-color: $body_bg !important;
+}
+
+.btn-primary:hover {
+  color: $body_bg;
+  background-color: $ascent_color !important;
+  -webkit-transition: background-color 0.5s ease-out;
+  -moz-transition: background-color 0.5s ease-out;
+  -o-transition: background-color 0.5s ease-out;
+  transition: background-color 0.5s ease-out;
+}
+.btn {
+  border-color: $ascent_color;
+  &:hover {
+    border-color: $ascent_color;
+  }
+}
