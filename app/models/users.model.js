@@ -59,7 +59,7 @@ userSchema.pre("save", async function (next) {
     user.password = await bcrypt.hash(user.password, 8);
   }
   if (users.length > 0) {
-    next("Duplicated username");
+    next("duplicate username");
   } else {
     next();
   }
@@ -88,6 +88,7 @@ userSchema.statics.findUsersByNameOrUsername = async (text) => {
 userSchema.methods.generateAuthToken = async (username) => {
   // Generate an auth token for the user
   const user = this;
+  //ENV//
   const token = jwt.sign({ _id: user._id }, "WinterIsComingGOT2019");
   user.token = token;
   try {
@@ -122,21 +123,21 @@ userSchema.statics.loginByCredentials = async (username, password) => {
   try {
     const user = await User.findOne({ username: username });
     if (!user) {
-      throw new Error({ error: "Invalid login credentials" });
+      throw new Error("Invalid login credentials");
     }
     //compare password using bcrypt
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
-      throw new Error({ error: "Invalid login credentials" });
+      throw new Error("Invalid login credentials");
     }
     user.password = "";
     let res = await user.generateAuthToken(username);
     if (res != "OK") {
-      throw new Error({ error: "Unknow error setting token" });
+      throw new Error("Unknow error setting token");
     }
     return user;
-  } catch (error) {
-    throw new Error({ error: "Unknow error setting token" });
+  } catch (error) {    
+    throw new Error(error.message);
   }
 };
 

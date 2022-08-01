@@ -40,6 +40,7 @@ var port = process.env.PORT || 8002;
 ////////////////////////////////////////////////////////////////////////
 
 const User = require('./app/routes/users.routes.js')(app);
+const Vehicle = require('./app/routes/vehicles.routes.js')(app);
 app.get('/', (req, res) => {
     res.json({
         "message": "This is a JSON response to a HTTP GET request. "

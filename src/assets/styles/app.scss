@@ -4,8 +4,9 @@
 
 /****GLOBAL VAIRABLES **********/
 $body_bg: #ffffff;
+$lights: #ffffff;
 $ascent_color: #3256ed;
-$secondary-color: #f34c73;
+$secondary_color: #f34c73;
 $shadows: #161616;
 
 /******CUSTOM CLASSES*******/
@@ -33,6 +34,17 @@ a {
   font-weight: bolder !important;
 }
 
+.btn {
+  border-color: $ascent_color;
+  box-shadow: none !important;
+  &:focus,
+  &:active,
+  &:hover {
+    box-shadow: none !important;
+    border-color: $ascent_color;
+  }
+}
+
 .btn-primary {
   color: $ascent_color;
   background-color: $body_bg !important;
@@ -43,17 +55,48 @@ a {
   background-color: $body_bg !important;
 }
 
-.btn-primary:hover {
-  color: $body_bg;
-  background-color: $ascent_color !important;
-  -webkit-transition: background-color 0.5s ease-out;
-  -moz-transition: background-color 0.5s ease-out;
-  -o-transition: background-color 0.5s ease-out;
-  transition: background-color 0.5s ease-out;
-}
-.btn {
-  border-color: $ascent_color;
-  &:hover {
-    border-color: $ascent_color;
+.btn-primary {
+  &:focus,
+  &:active {
+    color: $ascent_color;
   }
+  &:hover {
+    color: $body_bg;
+    background-color: $ascent_color !important;
+    -webkit-transition: background-color 0.5s ease-out;
+    -moz-transition: background-color 0.5s ease-out;
+    -o-transition: background-color 0.5s ease-out;
+    transition: background-color 0.5s ease-out;
+  }
+}
+
+.toast {
+  opacity: 1 !important;
+}
+
+.input-group-text {
+  color: $ascent_color;
+  background-color: $lights;
+  border-color: $ascent_color;
+}
+
+.toast-body.progressToast {
+  padding: 0.75rem 0px 0px 0px;
+}
+
+input:placeholder-shown {
+  font-style: italic;
+}
+
+::-webkit-input-placeholder {
+  font-style: italic;
+}
+:-moz-placeholder {
+  font-style: italic;
+}
+::-moz-placeholder {
+  font-style: italic;
+}
+:-ms-input-placeholder {
+  font-style: italic;
 }

@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import alerts from './Alerts/alerts';
+import user from './User/user';
 
 Vue.use(Vuex)
 
@@ -11,5 +13,7 @@ export default new Vuex.Store({
   actions: {
   },
   modules: {
+    alerts,
+    user
   }
 })

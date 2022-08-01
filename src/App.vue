@@ -15,14 +15,15 @@ export default {
   },
   async created() {
     let that = this;
-
   },
 };
 </script>
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -33,4 +34,5 @@ export default {
 body {
   margin: 0;
 }
+
 </style>
