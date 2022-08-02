@@ -13,17 +13,16 @@ const roleSchema = mongoose.Schema({
 
 roleSchema.index({ userType: 1, action: 1 }, { unique: true });
 
-roleSchema.methods.isEnabled = async (userType, action) => {
-  // Update user using the username and password.
-  try {
-    const role = await Role.findOne({ userType, action });
+roleSchema.statics.isEnabled = async (userType, action) => {  
+  try {    
+    const role = await Role.findOne({ userType, action });    
     return Object.keys(role).length > 0;
   } catch (error) {
     return false;
   }
 };
 
-roleSchema.methods.disable = async (userType, action) => {
+roleSchema.statics.disable = async (userType, action) => {
   // Update user using the username and password.
   try {
     await Role.findOneAndDelete({ userType, action });

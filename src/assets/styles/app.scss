@@ -1,6 +1,7 @@
 /*Then import Bootstrap and BootstrapVue SCSS files (order is important)**/
 @import "node_modules/bootstrap/scss/bootstrap.scss";
 @import "node_modules/bootstrap-vue/src/index.scss";
+@import "node_modules/bootstrap/scss/variables";
 
 /****GLOBAL VAIRABLES **********/
 $body_bg: #ffffff;
@@ -8,6 +9,18 @@ $lights: #ffffff;
 $ascent_color: #3256ed;
 $secondary_color: #f34c73;
 $shadows: #161616;
+$breakpoint-xs: 0;
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+
+/**********GLOBAL EXPORTS VAIRABLES*********/
+
+:export {
+  ascent_color: $ascent_color;
+}
+
 
 /******CUSTOM CLASSES*******/
 .bg-primary {
@@ -100,3 +113,5 @@ input:placeholder-shown {
 :-ms-input-placeholder {
   font-style: italic;
 }
+
+

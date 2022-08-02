@@ -37,12 +37,27 @@ exports.getByFilters = async (req, res) => {
     res.status(400).send(error);
   }
 };
+
+//return the basiscs for filters, creation and editions
+exports.getBasics = async (req, res) => {
+  try {
+    let basics = await vehicleK.getBasicsValues(req.body);
+    res.status(200).send(basics);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
 // Update a vehicle by its id
 exports.update = async (req, res) => {
   try {
-    var vehicle = await vehicleK.updateVechicle(req.params.id, req.body);
-    res.status(200).send({ vehicle });
-  } catch (error) {
-    res.status(400).send(error);
+    var vehicle = await vehicleK.updateVehicle(req.params.id, req.body);
+    if(vehicle.modifiedCount){
+      res.status(200).send({ message:"OK" });  
+    }
+    if(!vehicle.modifiedCount){
+      res.status(500).send({ message:"Error: Unknow error updating the vehicle" });  
+    }    
+  } catch (error) {    
+    res.status(400).send({message:error.message});
   }
 };

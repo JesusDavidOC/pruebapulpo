@@ -1,5 +1,4 @@
 const roleK = require("../models/roles.model.js");
-const bcrypt = require("bcryptjs");
 // Create and save a new User
 exports.create = async (req, res) => {
   // Validate if the request's body is empty
@@ -25,7 +24,7 @@ exports.create = async (req, res) => {
   }
 };
 
-//found users by filters
+//found roles by filters
 exports.getByFilters = async (req, res) => {
   res.status(400).send(new Error("Coming soon...."));
   try {
@@ -34,6 +33,10 @@ exports.getByFilters = async (req, res) => {
   } catch (error) {
     //res.status(400).send(new Error("Coming soon...."));
   }
+};
+
+exports.validate = async (userType, action) => {
+  return roleK.isEnabled(userType, action);  
 };
 // Update a user by its id
 exports.update = async (req, res) => {
@@ -45,6 +48,3 @@ exports.update = async (req, res) => {
     //res.status(400).send(error);
   }
 };
-
-
-

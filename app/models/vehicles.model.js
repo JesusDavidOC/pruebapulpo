@@ -36,14 +36,6 @@ const logsSchema = mongoose.Schema(
  *
  *
  */
-const colorSchema = mongoose.Schema({
-  name: {
-    type: String,
-  },
-  hex: {
-    type: String,
-  },
-});
 const vehicleSchema = mongoose.Schema(
   {
     serialCode: {
@@ -66,7 +58,11 @@ const vehicleSchema = mongoose.Schema(
       min: 1800,
       max: 3000,
     },
-    color: colorSchema,
+    color: {
+      type: String,
+      required: true,
+      enum: ["#FF3F33", "#FFE433", "#6AFF33", "#33D7FF", "#3256ED", "#D033FF", "#FFFFFF", "#000000"],
+    },
     status: {
       type: String,
       default: "disabled",
@@ -75,7 +71,7 @@ const vehicleSchema = mongoose.Schema(
     },
     accessDate: {
       type: String,
-     // default: new Date().toISOString().split("T")[0],
+      // default: new Date().toISOString().split("T")[0],
       required: true,
       validate: /(^(\d{4})-(\d{2})-(\d{2}))/,
     },
@@ -95,7 +91,7 @@ vehicleSchema.pre("save", async function (next) {
   }
 });
 
-vehicleSchema.methods.updateLog = async (serialCode, action, change) => {
+vehicleSchema.statics.updateLog = async (serialCode, action, change) => {
   // Generate an auth token for the user
   try {
     let vehicleU = await Vehicle.findOneAndUpdate(
@@ -115,7 +111,7 @@ vehicleSchema.statics.findVehicleByFilter = async (filters) => {
         $regex: filters["serialCode"],
         $options: "i",
       };
-    }
+    }   
     return await Vehicle.find(filters, {
       _id: 0,
       createdAt: 0,
@@ -127,36 +123,58 @@ vehicleSchema.statics.findVehicleByFilter = async (filters) => {
   }
 };
 
+vehicleSchema.statics.getBasicsValues = async (filters) => {
+  // Found filters from collection "Filters"
+  try {
+    
+    let brands = Vehicle.schema.path('brand').enumValues;
+    let colors = Vehicle.schema.path('color').enumValues;
+    return {brands, colors}
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 vehicleSchema.statics.updateVehicle = async (id, vehicle) => {
   // Found filters from collection "Filters"
   try {
-    let vehicleK = await Vehicle.findOne({
-      serialCode: vehicle.serialCode,
+    let vehicleLog = await Vehicle.findOne({
+      serialCode: id,
     });
     //si son diferentes id entonces hay que revisar que no exista otro vehiculo con el mismo ID
-    if (id.toLowerCase() != vehicle.serialCode.toLowerCase()) {
-      if (Object.keys(vehicleK).length > 0) {
-        throw new Error("duplicate ID");
-      } else {
-        let vehicleLog = await Vehicle.findOne({
-          serialCode: id,
-        });
+    if (vehicleLog) {
+      let vehicleK = await Vehicle.findOne({
+        serialCode: vehicle.serialCode,
+      });
+      updateLocalLog = async () => {
         for (let key in Object.keys(vehicle)) {
-          let valueNew = vehicle[Object.keys(vehicle)[key]];
-          let valueOld = vehicleLog[Object.keys(vehicle)[key]];
-          if (valueOld != valueNew) {
-            Vehicle.updateLog(id, "update", {
-              param: Object.keys(vehicle)[key],
-              change: valueNew,
-            });
+          if (Object.keys(vehicle)[key] != "log") {
+            let valueNew = vehicle[Object.keys(vehicle)[key]];
+            let valueOld = vehicleLog[Object.keys(vehicle)[key]];            
+            if (valueOld != valueNew) {              
+              await Vehicle.updateLog(id, "update", {
+                param: Object.keys(vehicle)[key],
+                change: valueNew,
+              });
+            }
           }
         }
+      };
+      if (id.toLowerCase() != vehicle.serialCode.toLowerCase()) {
+        if (vehicleK) {
+          throw new Error("duplicate ID");
+        } else {
+          updateLocalLog();
+          return await Vehicle.updateOne({ serialCode: id }, vehicle);
+        }
+      } else {
+        updateLocalLog();
         return await Vehicle.updateOne({ serialCode: id }, vehicle);
       }
     } else {
-      return await Vehicle.updateOne({ serialCode: id }, vehicle);
+      throw new Error("Vehicle not found");
     }
-  } catch (error) {
+  } catch (error) {    
     throw new Error(error.message);
   }
 };

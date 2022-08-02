@@ -13,16 +13,32 @@ module.exports = (app) => {
    * DEFINE MIDDLEWARE FOR ROLES PERMISIONS AND THE USER SESION
    */
 
-  app.use("/vehicles", async (req, res, next) => {
-    const bearerHeader = req.headers["authorization"];
-    let bearer = bearerHeader.split(" ")[1];
-    let userF = await users.getByToken(bearer);
-    //let directive = req.method + req.originalUrl;
-    console.log(req.route.path);
-    if (userF) {
-      req.userActive = userF;
+  let verifyRole = async (req, res, next) => {
+    if (
+      await roles.validate(req.userActive.userType, req.method + req.route.path)
+    ) {
       next();
     } else {
+      res.status(401).send({
+        message: "Unauthorized",
+      });
+    }
+  };
+
+  app.use("/vehicles", async (req, res, next) => {
+    try {
+      const bearerHeader = req.headers["authorization"];
+      let bearer = bearerHeader.split(" ")[1];
+      let userF = await users.getByToken(bearer);
+      if (userF) {
+        req.userActive = userF;
+        next();
+      } else {
+        res.status(401).send({
+          message: "Unauthorized",
+        });
+      }
+    } catch (error) {
       res.status(401).send({
         message: "Unauthorized",
       });
@@ -30,9 +46,11 @@ module.exports = (app) => {
   });
 
   //found vehicles by filter
-  app.post("/vehicles/find", vehicle.getByFilters);
+  app.post("/vehicles/find", verifyRole, vehicle.getByFilters);
   // Create a new vehicle
-  app.post("/vehicles", vehicle.create);
-  // Update a user by ID
-  app.put("/vehicles/:ID", vehicle.update);
+  app.post("/vehicles", verifyRole, vehicle.create);
+  // Update a vehicle by ID
+  app.put("/vehicles/:id", verifyRole, vehicle.update);
+  //get basic values from vehicles for create, edit and filters
+  app.get("/vehicles/basics", vehicle.getBasics);
 };
