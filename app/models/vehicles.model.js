@@ -61,13 +61,20 @@ const vehicleSchema = mongoose.Schema(
     color: {
       type: String,
       required: true,
-      enum: ["#FF3F33", "#FFE433", "#6AFF33", "#33D7FF", "#3256ED", "#D033FF", "#FFFFFF", "#000000"],
+      enum: [
+        "#FF3F33",
+        "#FFE433",
+        "#6AFF33",
+        "#33D7FF",
+        "#3256ED",
+        "#D033FF",
+        "#FFFFFF",
+        "#000000",
+      ],
     },
     status: {
-      type: String,
-      default: "disabled",
-      enum: ["active", "disabled"],
-      required: true,
+      type: Boolean,
+      default: true,
     },
     accessDate: {
       type: String,
@@ -111,7 +118,7 @@ vehicleSchema.statics.findVehicleByFilter = async (filters) => {
         $regex: filters["serialCode"],
         $options: "i",
       };
-    }   
+    }
     return await Vehicle.find(filters, {
       _id: 0,
       createdAt: 0,
@@ -126,10 +133,15 @@ vehicleSchema.statics.findVehicleByFilter = async (filters) => {
 vehicleSchema.statics.getBasicsValues = async (filters) => {
   // Found filters from collection "Filters"
   try {
-    
-    let brands = Vehicle.schema.path('brand').enumValues;
-    let colors = Vehicle.schema.path('color').enumValues;
-    return {brands, colors}
+    let brands = Vehicle.schema.path("brand").enumValues;
+    let colors = Vehicle.schema.path("color").enumValues;
+    let serialCodeValidate = Vehicle.schema
+      .path("serialCode")
+      .validators.filter((iterator) => {
+        return iterator.type == "user defined";
+      })[0]["validator"];
+    console.log(serialCodeValidate.toString());
+    return { brands, colors, serialCodeValidate:serialCodeValidate.toString() };
   } catch (error) {
     throw new Error(error.message);
   }
@@ -150,8 +162,8 @@ vehicleSchema.statics.updateVehicle = async (id, vehicle) => {
         for (let key in Object.keys(vehicle)) {
           if (Object.keys(vehicle)[key] != "log") {
             let valueNew = vehicle[Object.keys(vehicle)[key]];
-            let valueOld = vehicleLog[Object.keys(vehicle)[key]];            
-            if (valueOld != valueNew) {              
+            let valueOld = vehicleLog[Object.keys(vehicle)[key]];
+            if (valueOld != valueNew) {
               await Vehicle.updateLog(id, "update", {
                 param: Object.keys(vehicle)[key],
                 change: valueNew,
@@ -174,7 +186,7 @@ vehicleSchema.statics.updateVehicle = async (id, vehicle) => {
     } else {
       throw new Error("Vehicle not found");
     }
-  } catch (error) {    
+  } catch (error) {
     throw new Error(error.message);
   }
 };

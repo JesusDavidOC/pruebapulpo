@@ -41,7 +41,7 @@ Vue.http.interceptors.push((request, next) => {
   //Si ya hay una sesión activa en el localStorage entonces la valido y si es valida lo dejo entrar, sino, entonces lo mantengo en el login
   request.headers.set(
     "Authorization",
-    "Bearer " + JSON.parse(localStorage.token)
+    "Bearer " + localStorage.userToken
   );
   request.headers.set("Accept", "application/json");
   next((res) => {

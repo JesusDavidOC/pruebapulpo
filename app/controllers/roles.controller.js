@@ -36,7 +36,7 @@ exports.getByFilters = async (req, res) => {
 };
 
 exports.validate = async (userType, action) => {
-  return roleK.isEnabled(userType, action);  
+  return roleK.isEnabled(userType, action);
 };
 // Update a user by its id
 exports.update = async (req, res) => {

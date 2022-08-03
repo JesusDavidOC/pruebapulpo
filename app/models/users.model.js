@@ -121,7 +121,7 @@ userSchema.statics.updateUserToken = async (username, token) => {
 userSchema.statics.loginByCredentials = async (username, password) => {
   // Search for a user by username.
   try {
-    const user = await User.findOne({ username: username });
+    let user = await User.findOne({ username: username });
     if (!user) {
       throw new Error("Invalid login credentials");
     }
@@ -135,6 +135,7 @@ userSchema.statics.loginByCredentials = async (username, password) => {
     if (res != "OK") {
       throw new Error("Unknow error setting token");
     }
+    user = await User.findOne({ username: username });
     return user;
   } catch (error) {    
     throw new Error(error.message);

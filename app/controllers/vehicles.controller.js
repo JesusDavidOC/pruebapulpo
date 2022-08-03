@@ -14,8 +14,7 @@ exports.create = async (req, res) => {
       if (err) {
         if (err == "duplicate ID") {
           res.status(400).send({ message: "Error: duplicate ID" });
-        } else {
-          console.log(err)
+        } else {          
           res.status(400).send({ message: "Error: Unknow error creating vechicle" });
         }
       } else {
@@ -31,8 +30,8 @@ exports.create = async (req, res) => {
 //found vechicles by filters
 exports.getByFilters = async (req, res) => {
   try {
-    var vehicle = await vehicleK.findVehicleByFilter(req.body);
-    res.status(200).send({ vehicle });
+    var vehicles = await vehicleK.findVehicleByFilter(req.body);
+    res.status(200).send({ vehicles });
   } catch (error) {
     res.status(400).send(error);
   }

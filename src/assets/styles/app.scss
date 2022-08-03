@@ -21,8 +21,20 @@ $breakpoint-xl: 1200px;
   ascent_color: $ascent_color;
 }
 
-
 /******CUSTOM CLASSES*******/
+.w-70 {
+  width: 70% !important;
+}
+.h-70 {
+  height: 70% !important;
+}
+.mxh-70 {
+  max-height: 70% !important;
+}
+
+.h-30 {
+  height: 30% !important;
+}
 .bg-primary {
   background-color: $body_bg !important;
   color: $shadows;
@@ -39,6 +51,10 @@ a {
   height: fit-content;
 }
 
+.w-fitc {
+  width: fit-content;
+}
+
 .bold {
   font-weight: bold !important;
 }
@@ -47,7 +63,7 @@ a {
   font-weight: bolder !important;
 }
 
-.btn {
+.btn-primary {
   border-color: $ascent_color;
   box-shadow: none !important;
   &:focus,
@@ -61,6 +77,16 @@ a {
 .btn-primary {
   color: $ascent_color;
   background-color: $body_bg !important;
+}
+
+.btn-outline-primary {
+  color: $ascent_color;
+  border-color: $ascent_color;
+  &:hover {
+    color: white;
+    border-color: $ascent_color;
+    background-color: $ascent_color;
+  }
 }
 
 .btn-secondary {
@@ -114,4 +140,80 @@ input:placeholder-shown {
   font-style: italic;
 }
 
+.carsExtended {
+  & .card-header {
+    &:deep .custom-control-input ~ .custom-control-label::before {
+      transform: none;
+    }
+    &:deep .custom-control-input ~ .custom-control-label::after {
+      transform: none;
+    }
+  }
+}
 
+/*********GLOBAL MEDIA QUERYS****************/
+@media screen and (max-width: $breakpoint-md) {
+  .cardVechicle {
+    background: rgba(255, 255, 255, 0);
+    & .card-header {
+      border: none;
+      padding: 0 !important;
+      background: rgba(255, 255, 255, 0);
+      & > div {
+        padding: 1.4em 0.8em 1.4em 0.8em !important;
+      }
+      &:deep .custom-control-input:checked ~ .custom-control-label::before {
+        transform: scale(1) !important;
+      }
+      &:deep .custom-control-input:checked ~ .custom-control-label::after {
+        transform: scale(1) !important;
+      }
+      &::deep .custom-control-input {
+        height: fit-content;
+      }
+
+      &:deep .custom-switch {
+        padding-top: 0px !important;
+        padding-bottom: 0px !important;
+      }
+    }
+  }
+}
+
+/*******CUSTOM ANIMATIONS********/
+@-webkit-keyframes breathing {
+  0% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+
+  50% {
+    -webkit-transform: scale(1.2);
+    transform: scale(1.2);
+  }
+
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+@keyframes breathing {
+  0% {
+    -webkit-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+  }
+
+  50% {
+    -webkit-transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    transform: scale(1.2);
+  }
+
+  100% {
+    -webkit-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+  }
+}

@@ -21,8 +21,8 @@
           <b-row>
             <b-col
               class="card_container"
-              :md="userViewActive ? '6' : '2'"
-              order-md="1"
+              :lg="userViewActive ? '6' : '2'"
+              order-lg="1"
               order="2"
               cols="12"
             >
@@ -41,8 +41,8 @@
             </b-col>
             <b-col
               class="card_container"
-              :md="userViewActive ? '6' : '10'"
-              order-md="2"
+              :lg="userViewActive ? '6' : '10'"
+              order-lg="2"
               order="1"
               cols="12"
             >
@@ -59,8 +59,12 @@
                     <b-col class="h-fitc" cols="auto" v-if="loading_vehicles">
                       <b-spinner variant="light" type="grow"></b-spinner>
                     </b-col>
-                    <b-col v-else>
-                      jsjsjs
+                    <b-col class="h-100 pb-5" v-else>
+                      <Vehicles
+                        :filters="filters"
+                        :vehicles="vehicles"
+                        @newVehicle="newVehicle($event)"
+                      />
                     </b-col>
                   </b-row>
                 </b-container>
@@ -76,32 +80,79 @@
 <script>
 import PVIcon from "../components/PrincipalViewTools/PVIcon.vue";
 import styles from "./PrincipalView.vue?vue&type=style&index=0&lang=scss&module=1";
+import Vehicles from "../components/PrincipalViewTools/Vehicles.vue";
 export default {
   components: {
     PVIcon,
+    Vehicles,
   },
   data() {
     return {
       userViewActive: false,
       ascent_color: styles.ascent_color,
       loading_vehicles: true,
+      vehicles: [],
+      filters: {},
     };
   },
   methods: {
+    newVehicle(ev) {
+      this.vehicles.unshift(ev);
+    },
     openUserTab() {
       this.userViewActive = !this.userViewActive;
     },
-    getVehicles(){
-      this.$http.post("vehicles/")
-    }
+    async getVehicles() {
+      let that = this;
+      await this.$http
+        .post("vehicles/find", that.filters)
+        .then((respJson) => {
+          return respJson.json();
+        })
+        .then((response) => {
+          that.vehicles = response.vehicles;
+          that.loading_vehicles = false;
+        })
+        .catch((err) => {
+          that.$Error(
+            "Error",
+            "An unknown error occurred while getting the vehicles information",
+            that
+          );
+        });
+    },
+    async getBasics() {
+      let that = this;
+      await this.$http
+        .get("vehicles/basics")
+        .then((respJson) => {
+          return respJson.json();
+        })
+        .then((response) => {
+          that.$store.commit("pvStore/setBasics", response);
+          that.getVehicles();
+        })
+        .catch((err) => {
+          that.$Error(
+            "Error",
+            "An unknown error occurred while getting the basic information",
+            that
+          );
+        });
+    },
+  },
+  mounted() {
+    this.getBasics();
   },
 };
 </script>
-
-<style scoped lang="scss">
+<style lang="scss">
 :export {
   ascent_color: $ascent_color;
 }
+</style>
+
+<style scoped lang="scss">
 #header_pulpo {
   background-color: $ascent_color;
   height: 20vh;
@@ -116,44 +167,6 @@ export default {
   .card-header {
     background-color: #ffffff00;
     border: none;
-  }
-}
-
-/*******CUSTOM ANIMATIONS********/
-@-webkit-keyframes breathing {
-  0% {
-    -webkit-transform: scale(1);
-    transform: scale(1);
-  }
-
-  50% {
-    -webkit-transform: scale(1.2);
-    transform: scale(1.2);
-  }
-
-  100% {
-    -webkit-transform: scale(1);
-    transform: scale(1);
-  }
-}
-
-@keyframes breathing {
-  0% {
-    -webkit-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-  }
-
-  50% {
-    -webkit-transform: scale(1.2);
-    -ms-transform: scale(1.2);
-    transform: scale(1.2);
-  }
-
-  100% {
-    -webkit-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
   }
 }
 

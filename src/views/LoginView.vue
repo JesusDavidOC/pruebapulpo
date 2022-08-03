@@ -75,7 +75,6 @@
 
 <script>
 import InputRules from "../components/Inputs/InputRules.vue";
-import { mapMutations, mapGetters } from "vuex";
 export default {
   components: {
     InputRules,
@@ -96,7 +95,7 @@ export default {
         this.passwordType = "password";
       }
     },
-    login() {
+    async login() {
       let that = this;
       if (
         this.username == "" ||
@@ -120,11 +119,13 @@ export default {
             return response.json();
           })
           .then((res) => {
-            window.localStorage.setItem("userToken", res.sesion.token)
-            that.$store.commit("user/setUser", res.session);
+            console.log(res.sesion.token)
+            localStorage.setItem("userToken", res.sesion.token)
+            that.$store.commit("user/setSession", res.sesion);
             that.$router.push({ name: "home" });
           })
           .catch((error) => {
+            console.log(error)
             that.$Error("Error", error.body.message, that);
           });
       }
