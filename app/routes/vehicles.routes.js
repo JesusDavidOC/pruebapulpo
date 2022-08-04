@@ -53,4 +53,6 @@ module.exports = (app) => {
   app.put("/vehicles/:id", verifyRole, vehicle.update);
   //get basic values from vehicles for create, edit and filters
   app.get("/vehicles/basics", vehicle.getBasics);
+
+  app.delete("/vehicles/:id", vehicle.delete);
 };

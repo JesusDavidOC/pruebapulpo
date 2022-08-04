@@ -6,24 +6,32 @@
       @change="textCmp = $event"
       :options="options"
       :value="textCmp"
+      :size="size"
       required
     ></b-form-select>
-    <div class="input-group" v-else-if="type == 'text' || type == 'password'">
+    <b-input-group
+      :size="size ? size : 'md'"
+      v-else-if="type == 'text' || type == 'password'"
+      :id="label ? labelID : ''"
+    >
       <b-form-input
-        :id="label ? labelID : ''"
         :state="text == '' || !stateInp ? null : validateString()"
         :placeholder="placeholder"
         :type="type"
-        @value="textCmp"
+        v-model="textCmp"
         @input="textCmp = $event"
       ></b-form-input>
       <slot></slot>
-    </div>
-    <b-card :id="label ? labelID : ''" v-else-if="type == 'color'">
+    </b-input-group>
+    <b-card
+      class="colorPiker"
+      :id="label ? labelID : ''"
+      v-else-if="type == 'color'"
+    >
       <b-container fluid>
         <b-row>
           <b-col
-            class="pl-1"
+            class="p-0"
             cols="auto"
             v-for="(option, index) in options"
             :key="labelID + index + 'color'"
@@ -37,9 +45,10 @@
               viewBox="0 0 120 100"
             >
               <rect
+                :class="option == textCmp ? 'selectedShadow' : ''"
                 x="10"
                 y="10"
-                width="100"
+                width="90"
                 height="80"
                 :stroke-width="option == '#FFFFFF' ? 3 : 0"
                 :stroke="option == '#FFFFFF' ? 'black' : ''"
@@ -50,31 +59,8 @@
             </svg>
           </b-col>
         </b-row>
-        <b-row class="mt-2">
-          <b-col>
-            Selected:
-            <svg
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              width="30"
-              height="30"
-              viewBox="0 0 120 100"
-            >
-              <rect
-                x="10"
-                y="10"
-                width="100"
-                height="80"
-                :stroke-width="textCmp == '#FFFFFF' ? 3 : 0"
-                :stroke="textCmp == '#FFFFFF' ? 'black' : ''"
-                rx="20"
-                ry="20"
-                :fill="textCmp"
-              />
-            </svg>
-          </b-col>
-        </b-row> </b-container
-    ></b-card>
+      </b-container>
+    </b-card>
     <b-form-datepicker
       v-else-if="type == 'date'"
       :id="labelID + 'datePick'"
@@ -83,6 +69,16 @@
       :max="maxDate ? maxDate : undefined"
       :min="minDate ? minDate : undefined"
     ></b-form-datepicker>
+    <b-container v-else-if="type == 'radios'">
+      <b-row>
+        <b-col v-for="(option, index) in options" :key="'optionsRadio' + index">
+          <b-form-radio v-model="textCmp" :value="option.value">
+            {{ option.text }}
+          </b-form-radio>
+        </b-col>
+      </b-row>
+    </b-container>
+    <b-form-checkbox v-else-if="type == 'switch'" v-model="textCmp" switch />
   </b-form-group>
 </template>
 
@@ -100,6 +96,8 @@ export default {
     "options",
     "maxDate",
     "minDate",
+    "size",
+    "hideSelected",
   ],
   data() {
     return {};
@@ -123,4 +121,20 @@ export default {
 };
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+legend {
+  text-align: left;
+  padding-bottom: 0 !important;
+}
+.colorPiker {
+  .card-body {
+    padding: 0.6em 0.4em 0.6em 0.4em;
+  }
+}
+
+fieldset {
+  &.form-group {
+    margin-bottom: 3px !important;
+  }
+}
+</style>

@@ -1,7 +1,8 @@
 <template>
   <b-card
     body-class="d-none"
-    class="cardVechicle"
+    class="cardVechicle shadow"
+    :class="!vehicle.status ? 'cardDisabled' : ''"
     :style="'border-color:' + vehicle.color + ';'"
   >
     <template #header>
@@ -24,13 +25,21 @@
             <b-container fluid class="p-0" style="width: 1.5em">
               <b-row class="p-0 pb-2">
                 <b-col class="p-0">
-                  <b-icon icon="gear-fill"></b-icon>
+                  <b-icon icon="gear-fill" @click="editVehicle()"></b-icon>
                 </b-col>
               </b-row>
               <b-row class="p-0">
                 <b-col class="p-0"
-                  ><b-form-checkbox v-model="vehicle.status" switch
-                /></b-col>
+                  ><b-icon
+                    icon="trash"
+                    @click="deleteVehicle()"
+                    :variant="
+                      vehicle.color == '#D033FF' || vehicle.color == '#FF3F33'
+                        ? 'light'
+                        : 'danger'
+                    "
+                  ></b-icon
+                ></b-col>
               </b-row>
             </b-container>
           </b-col>
@@ -43,6 +52,27 @@
 <script>
 export default {
   props: ["vehicle"],
+  methods: {
+    editVehicle() {
+      this.$emit("editVehicle");
+    },
+
+    deleteVehicle() {
+      let that = this;
+      that.$http
+        .delete("vehicles/" + this.vehicle.serialCode)
+        .then((responseJson) => {
+          return responseJson.json();
+        })
+        .then((res) => {
+          that.$Success("Success", "Vehicle deleted successfully", that);
+          this.$emit("deleteVehicle", this.vehicle.serialCode);
+        })
+        .catch((err) => {
+          that.$Error("Error", err.message, that);
+        });
+    },
+  },
 };
 </script>
 
@@ -51,6 +81,10 @@ export default {
   background-color: $shadows !important;
   border-color: $shadows !important;
   width: auto;
+}
+
+.b-icon {
+  cursor: pointer;
 }
 .cardVechicle {
   background: rgba(255, 255, 255, 0);
@@ -63,7 +97,8 @@ export default {
     }
   }
 }
+.cardDisabled {
+  filter: brightness(50%) !important;
+}
 </style>
-<style lang="scss">
-
-</style>
+<style lang="scss"></style>

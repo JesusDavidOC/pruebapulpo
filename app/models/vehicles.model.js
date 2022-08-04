@@ -119,12 +119,15 @@ vehicleSchema.statics.findVehicleByFilter = async (filters) => {
         $options: "i",
       };
     }
+    if(!filters["order"]){
+      filters["order"] = { createdAt: -1 }
+    }
     return await Vehicle.find(filters, {
       _id: 0,
       createdAt: 0,
       updatedAt: 0,
       __v: 0,
-    });
+    }).sort(filters["order"]);
   } catch (error) {
     throw new Error(error.message);
   }
@@ -140,8 +143,11 @@ vehicleSchema.statics.getBasicsValues = async (filters) => {
       .validators.filter((iterator) => {
         return iterator.type == "user defined";
       })[0]["validator"];
-    console.log(serialCodeValidate.toString());
-    return { brands, colors, serialCodeValidate:serialCodeValidate.toString() };
+    return {
+      brands,
+      colors,
+      serialCodeValidate: serialCodeValidate.toString(),
+    };
   } catch (error) {
     throw new Error(error.message);
   }
@@ -195,6 +201,7 @@ vehicleSchema.statics.deleteVehicle = async (id) => {
   // Found filters from collection "Filters"
   try {
     await Vehicle.deleteOne({ serialCode: id });
+    return "OK";
   } catch (error) {
     throw new Error(error.message);
   }

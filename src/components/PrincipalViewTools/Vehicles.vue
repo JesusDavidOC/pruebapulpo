@@ -1,113 +1,74 @@
 <template>
-  <b-container class="h-100 pt-4" fluid>
-    <b-row class="h-30">
-      <b-col>
-        {{ basics }}
-      </b-col>
-    </b-row>
-    <b-row class="mxh-70 mt-2 h-auto" id="vehiclesContianer">
-      <b-col md="4" cols="12" class="pr-1 mb-1" id="createCar">
-        <b-card>
-          <b-container class="h-100">
-            <b-row class="h-100" align-v="center" align-h="center">
-              <b-col>
-                <a class="addNewCarButton" @click="openCreateVehicle($event)">
-                  <b-icon icon="plus-circle"></b-icon> ADD</a
-                >
-              </b-col>
-            </b-row>
-          </b-container>
-        </b-card>
-      </b-col>
-      <b-col
-        md="4"
-        cols="12"
-        v-for="(vehicle, index) in vehicles"
-        :key="'vehicle' + index"
-        class="pr-1 mb-1 h-fitc"
-      >
-        <VehicleCard :vehicle="vehicle" />
-      </b-col>
-    </b-row>
-    <b-modal
-      id="modalCreationTool"
-      ref="modalCreationTool"
-      :title="actionView == 'create' ? 'Create a new vehicle' : false"
-    >
-      <b-container>
-        <b-row>
-          <b-col>
-            <b-form>
-              <InputRules
-                :text="vehicle.serialCode"
-                type="text"
-                @update:text="vehicle.serialCode = $event"
-                placeholder="ABC-123A"
-                label="Vehicle ID"
-                labelID="serialCodeText"
-              >
-              </InputRules>
-              <InputRules
-                :text="vehicle.brand"
-                type="select"
-                @update:text="vehicle.brand = $event"
-                :options="
-                  [{ text: 'Select one', value: null }].concat(basics.brands)
-                "
-                label="Brand"
-                labelID="brandSelect"
-              >
-              </InputRules>
-              <InputRules
-                :text="vehicle.model"
-                type="select"
-                @update:text="vehicle.model = $event"
-                :options="years"
-                label="Model"
-                labelID="modelSelect"
-              >
-              </InputRules>
-              <InputRules
-                :text="vehicle.color"
-                type="color"
-                @update:text="vehicle.color = $event"
-                :options="basics.colors"
-                label="Color"
-                labelID="colorSelect"
-              >
-              </InputRules>
-              <InputRules
-                :text="vehicle.accessDate"
-                type="date"
-                @update:text="vehicle.accessDate = $event"
-                :maxDate="new Date()"
-                label="Access date"
-                labelID="accessDatePiker"
-              >
-              </InputRules>
-            </b-form>
-          </b-col>
-        </b-row>
-      </b-container>
-      <template #modal-footer
-        ><b-button @click="createVehicle()" variant="outline-primary"
-          >Create</b-button
+  <div class="h-100">
+    <b-container class="h-100" cols="auto" v-if="loading_vehicles">
+      <b-row align-h="center" align-v="center" class="h-100">
+        <b-col cols="auto" class="h-fitc">
+          <b-spinner variant="light" type="grow"></b-spinner>
+        </b-col>
+      </b-row>
+    </b-container>
+    <b-container class="h-100 pt-4" fluid v-else>
+      <b-row class="h-30 pt-2">
+        <b-col>
+          <VehiclesFilter
+            @changedFilters="findVehicles($event)"
+            :years="years"
+          />
+        </b-col>
+      </b-row>
+      <b-row class="mt-2" id="vehiclesContianer">
+        <b-col md="4" cols="12" class="pr-1 mb-1" id="createCar">
+          <b-card>
+            <b-container class="h-100">
+              <b-row class="h-100" align-v="center" align-h="center">
+                <b-col>
+                  <a class="addNewCarButton" @click="openCreateVehicle($event)">
+                    <b-icon icon="plus-circle"></b-icon> ADD</a
+                  >
+                </b-col>
+              </b-row>
+            </b-container>
+          </b-card>
+        </b-col>
+        <b-col
+          md="4"
+          cols="12"
+          v-for="(vehicle, index) in vehicles"
+          :key="'vehicle' + index"
+          class="pr-1 mb-1 h-fitc"
         >
-        <b-button variant="outline-danger">Cancel</b-button>
-      </template>
-    </b-modal>
-  </b-container>
+          <VehicleCard
+            :vehicle="vehicle"
+            @editVehicle="openEditVehicle(vehicle)"
+            @deleteVehicle="deleteVehicle($event)"
+          />
+        </b-col>
+      </b-row>
+      <VehicleTool
+        ref="modalCreationTool"
+        :actionView="actionView"
+        :vehicle="vehicle"
+        :years="years"
+        @createVehicle="createVehicle()"
+        @updateVehicle="getVehicles()"
+      >
+      </VehicleTool>
+    </b-container>
+  </div>
 </template>
 
 <script>
 import VehicleCard from "./VehicleCard.vue";
 import InputRules from "../Inputs/InputRules.vue";
+import VehicleTool from "./VehicleTool.vue";
+import VehiclesFilter from "./VehiclesFilter.vue";
 export default {
   components: {
     VehicleCard,
     InputRules,
+    VehicleTool,
+    VehiclesFilter,
   },
-  props: ["vehicles", "filters"],
   data() {
     function range(start, end) {
       let arr = [{ text: "Select one", value: null }];
@@ -125,7 +86,10 @@ export default {
         model: "",
         status: "",
       },
+      filters: {},
+      vehicles: [],
       vehicle: {
+        status: true,
         serialCode: "",
         brand: null,
         model: null,
@@ -133,14 +97,36 @@ export default {
         accessDate: new Date().toISOString().split("T")[0],
       },
       years: range(1918, 2023),
+      loading_vehicles: true,
     };
   },
   methods: {
-    openCreateVehicle(ev) {
-      this.$store.dispatch("pvStore/showModal", {
-        ref: "modalCreationTool",
-        that: this,
+    deleteVehicle(ev) {
+      console.log(ev);
+      this.vehicles = this.vehicles.filter((el) => {
+        return el.serialCode != ev;
       });
+    },
+    findVehicles(ev) {
+      console.log(ev);
+      this.filters = ev;
+    },
+    openEditVehicle(vehicle) {
+      this.vehicle = vehicle;
+      this.actionView = "edit";
+      this.$refs["modalCreationTool"].$children[0].show();
+    },
+    openCreateVehicle(ev) {
+      this.actionView = "create";
+      this.vehicle = {
+        serialCode: "",
+        brand: null,
+        model: null,
+        color: "#FFFFFF",
+        accessDate: new Date().toISOString().split("T")[0],
+        status: true,
+      };
+      this.$refs["modalCreationTool"].$children[0].show();
       ev.stopPropagation();
       ev.preventDefault();
     },
@@ -153,23 +139,61 @@ export default {
           return responseJson.json();
         })
         .then((res) => {
-          this.$emit("newVehicle", {
+          this.newVehicle({
             serialCode: res.vehicle.serialCode,
             color: res.vehicle.color,
             accessDate: res.vehicle.accessDate,
             brand: res.vehicle.brand,
             model: res.vehicle.model,
-            active:true
+            status: true,
           });
-          this.$store.dispatch("pvStore/hideModal", {
-            ref: "modalCreationTool",
-            that,
-          });
-
+          this.$refs["modalCreationTool"].$children[0].hide();
           that.$Success("Success", "Vehicle created successfully", that);
         })
         .catch((err) => {
-          that.$Error("Error", error.body.message, that);
+          that.$Error("Error", err.message, that);
+        });
+    },
+    newVehicle(ev) {
+      this.vehicles.unshift(ev);
+    },
+    async getBasics() {
+      let that = this;
+      await this.$http
+        .get("vehicles/basics")
+        .then((respJson) => {
+          return respJson.json();
+        })
+        .then((response) => {
+          that.$store.commit("pvStore/setBasics", response);
+          that.getVehicles();
+        })
+        .catch((err) => {
+          that.$Error(
+            "Error",
+            "An unknown error occurred while getting the basic information",
+            that
+          );
+        });
+    },
+    async getVehicles() {
+      let that = this;
+      //that.loading_vehicles = true;
+      await this.$http
+        .post("vehicles/find", that.filters)
+        .then((respJson) => {
+          return respJson.json();
+        })
+        .then((response) => {
+          that.vehicles = response.vehicles;
+          that.loading_vehicles = false;
+        })
+        .catch((err) => {
+          that.$Error(
+            "Error",
+            "An unknown error occurred while getting the vehicles information",
+            that
+          );
         });
     },
   },
@@ -178,6 +202,14 @@ export default {
       return this.$store.getters["pvStore/getBasics"];
     },
   },
+  watch: {
+    filters() {
+      this.getVehicles();
+    },
+  },
+  mounted() {
+    this.getBasics();
+  },
 };
 </script>
 
@@ -185,6 +217,8 @@ export default {
 #vehiclesContianer {
   overflow-y: auto !important;
   overflow-x: hidden !important;
+  height: 65% !important;
+  max-height: 65% !important;
   padding-bottom: 2em;
 }
 #createCar {

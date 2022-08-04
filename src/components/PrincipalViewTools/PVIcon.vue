@@ -5,6 +5,7 @@
         stacked
         icon="circle-fill"
         animation="throb"
+        class="shadow"
         scale="1.5"
         :color="bg_color"
       ></b-icon>

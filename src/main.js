@@ -46,6 +46,7 @@ Vue.http.interceptors.push((request, next) => {
   request.headers.set("Accept", "application/json");
   next((res) => {
     if (res.status == 401) {
+      console.log(res.body.message)
     } else if (res.status == 409) {
     }
   });

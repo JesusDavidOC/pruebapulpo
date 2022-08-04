@@ -17,16 +17,16 @@
     </b-row>
     <b-row id="content">
       <b-col>
-        <b-container fluid>
-          <b-row>
+        <b-container class="h-100" fluid>
+          <b-row class="h-100">
             <b-col
               class="card_container"
-              :lg="userViewActive ? '6' : '2'"
+              :lg="userViewActive ? '5' : '2'"
               order-lg="1"
               order="2"
               cols="12"
             >
-              <b-card>
+              <b-card class="h-100">
                 <template #header>
                   <PVIcon
                     bg_color="White"
@@ -41,12 +41,12 @@
             </b-col>
             <b-col
               class="card_container"
-              :lg="userViewActive ? '6' : '10'"
+              :lg="userViewActive ? '7' : '10'"
               order-lg="2"
               order="1"
               cols="12"
             >
-              <b-card
+              <b-card class="pb-0"
                 ><template #header>
                   <PVIcon
                     bg_color="White"
@@ -55,16 +55,9 @@
                   />
                 </template>
                 <b-container id="carsList">
-                  <b-row class="h-100" align-h="center" align-v="center">
-                    <b-col class="h-fitc" cols="auto" v-if="loading_vehicles">
-                      <b-spinner variant="light" type="grow"></b-spinner>
-                    </b-col>
-                    <b-col class="h-100 pb-5" v-else>
-                      <Vehicles
-                        :filters="filters"
-                        :vehicles="vehicles"
-                        @newVehicle="newVehicle($event)"
-                      />
+                  <b-row class="h-100">
+                    <b-col class="h-100">
+                      <Vehicles />
                     </b-col>
                   </b-row>
                 </b-container>
@@ -89,60 +82,13 @@ export default {
   data() {
     return {
       userViewActive: false,
-      ascent_color: styles.ascent_color,
-      loading_vehicles: true,
-      vehicles: [],
-      filters: {},
+      ascent_color: styles.ascent_color
     };
   },
   methods: {
-    newVehicle(ev) {
-      this.vehicles.unshift(ev);
-    },
     openUserTab() {
       this.userViewActive = !this.userViewActive;
     },
-    async getVehicles() {
-      let that = this;
-      await this.$http
-        .post("vehicles/find", that.filters)
-        .then((respJson) => {
-          return respJson.json();
-        })
-        .then((response) => {
-          that.vehicles = response.vehicles;
-          that.loading_vehicles = false;
-        })
-        .catch((err) => {
-          that.$Error(
-            "Error",
-            "An unknown error occurred while getting the vehicles information",
-            that
-          );
-        });
-    },
-    async getBasics() {
-      let that = this;
-      await this.$http
-        .get("vehicles/basics")
-        .then((respJson) => {
-          return respJson.json();
-        })
-        .then((response) => {
-          that.$store.commit("pvStore/setBasics", response);
-          that.getVehicles();
-        })
-        .catch((err) => {
-          that.$Error(
-            "Error",
-            "An unknown error occurred while getting the basic information",
-            that
-          );
-        });
-    },
-  },
-  mounted() {
-    this.getBasics();
   },
 };
 </script>
@@ -158,7 +104,8 @@ export default {
   height: 20vh;
 }
 #content {
-  height: 80vh;
+  height: 78.8vh;
+  max-height: 78.8vh;
   background-color: $shadows;
 }
 .card {
@@ -185,7 +132,7 @@ export default {
 #carsList {
   background-color: $ascent_color;
   border-radius: 1.5em;
-  min-height: 65vh;
-  height: 65vh;
+  min-height: 71vh;
+  height: 71vh;
 }
 </style>

@@ -14,13 +14,15 @@ exports.create = async (req, res) => {
       if (err) {
         if (err == "duplicate ID") {
           res.status(400).send({ message: "Error: duplicate ID" });
-        } else {          
-          res.status(400).send({ message: "Error: Unknow error creating vechicle" });
+        } else {
+          res
+            .status(400)
+            .send({ message: "Error: Unknow error creating vechicle" });
         }
       } else {
         res.status(200).send({ vehicle, message: "OK" });
         //console.log("Data item is modified and saved in the db");
-      }    
+      }
     });
   } catch (error) {
     res.status(400).send(error);
@@ -50,13 +52,27 @@ exports.getBasics = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     var vehicle = await vehicleK.updateVehicle(req.params.id, req.body);
-    if(vehicle.modifiedCount){
-      res.status(200).send({ message:"OK" });  
+    if (vehicle.modifiedCount) {
+      res.status(200).send({ message: "OK" });
     }
-    if(!vehicle.modifiedCount){
-      res.status(500).send({ message:"Error: Unknow error updating the vehicle" });  
-    }    
-  } catch (error) {    
-    res.status(400).send({message:error.message});
+    if (!vehicle.modifiedCount) {
+      res
+        .status(500)
+        .send({ message: "Error: Unknow error updating the vehicle" });
+    }
+  } catch (error) {
+    res.status(400).send({ message: error.message });
+  }
+};
+
+// Update a vehicle by its id
+exports.delete = async (req, res) => {
+  try {
+    var vehicle = await vehicleK.deleteVehicle(req.params.id);
+    if (vehicle == "OK") {
+      res.status(200).send({ message: "OK" });
+    }
+  } catch (error) {
+    res.status(400).send({ message: error.message });
   }
 };

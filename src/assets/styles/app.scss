@@ -7,6 +7,7 @@
 $body_bg: #ffffff;
 $lights: #ffffff;
 $ascent_color: #3256ed;
+$palid_ascent_color: #697fda;
 $secondary_color: #f34c73;
 $shadows: #161616;
 $breakpoint-xs: 0;
@@ -25,11 +26,23 @@ $breakpoint-xl: 1200px;
 .w-70 {
   width: 70% !important;
 }
+
+.h-40 {
+  height: 40% !important;
+}
 .h-70 {
   height: 70% !important;
 }
 .mxh-70 {
   max-height: 70% !important;
+}
+
+.mxh-60 {
+  max-height: 60% !important;
+}
+
+.mxh-50 {
+  max-height: 50% !important;
 }
 
 .h-30 {
@@ -72,6 +85,12 @@ a {
     box-shadow: none !important;
     border-color: $ascent_color;
   }
+}
+
+.badge-primary {
+  border-color: $ascent_color;
+  background-color: $ascent_color;
+  color: white;
 }
 
 .btn-primary {
@@ -121,6 +140,18 @@ a {
 
 .toast-body.progressToast {
   padding: 0.75rem 0px 0px 0px;
+}
+
+.shadow {
+  -webkit-filter: drop-shadow(1px 1px 3px rgba(0, 0, 0, 0.7));
+  filter: drop-shadow(1px 1px 3px rgba(0, 0, 0, 0.987));
+  /* Similar syntax to box-shadow */
+}
+
+.selectedShadow {
+  -webkit-filter: drop-shadow(3px 3px 2px $palid_ascent_color);
+  filter: drop-shadow(1em 2px 4px $palid_ascent_color);
+  /* Similar syntax to box-shadow */
 }
 
 input:placeholder-shown {

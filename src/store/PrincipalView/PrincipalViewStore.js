@@ -10,12 +10,6 @@ export default {
     },
   },
   actions: {
-    showModal({}, payload) {
-      payload.that.$refs[payload.ref].show();
-    },
-    hideModal({}, payload) {
-      payload.that.$refs[payload.ref].hide();
-    },
   },
   getters: {
     getBasics(state) {
